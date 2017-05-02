@@ -31,6 +31,9 @@ public class PlayerMovement : MonoBehaviour {
         float input_y = Input.GetAxis("Vertical");
         Vector2 input_direction = new Vector2(input_x, input_y);
 
+        //Get which direction:
+        float input_angle = Mathf.Atan(input_y / input_x);
+
         //If you're not moving, take any direction
         if (!after_first_input && input_direction != Vector2.zero)
         {
