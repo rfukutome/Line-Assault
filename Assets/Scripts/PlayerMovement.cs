@@ -48,7 +48,6 @@ public class PlayerMovement : MonoBehaviour {
         //If you're not moving, take any direction
         if (!after_first_input && input_direction != Vector2.zero)
         {
-            PickRandomDirection();
             after_first_input = true;
         }
 
