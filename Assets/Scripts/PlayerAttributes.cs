@@ -4,32 +4,45 @@ using UnityEngine;
 
 public class PlayerAttributes : MonoBehaviour {
 
+    public ParticleEmitter particle_emitter;
+    private int player_respawn_time;
+    private PlayerMovement player_movement;
     string player_color; //future use?
 
 	// Use this for initialization
 	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+        player_movement = gameObject.GetComponentInParent<PlayerMovement>();
+        player_respawn_time = 5;
 	}
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        Debug.Log("we're hit!");
         Destroy(this.gameObject);
     }
 
     void OnParticleCollision(GameObject other)
     {
-        Debug.Log("We hit the particles!");
+        PlayerDeath();
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("we're hit!");
         Destroy(this.gameObject);
+    }
+
+    void PlayerDeath()
+    {
+        //Making all powerups zero.
+        //Make the player stop moving.
+        player_movement.PlayerDeath();
+        StartCoroutine(DeathAnimation());
+    }
+
+    IEnumerator DeathAnimation()
+    {
+        yield return new WaitForSeconds(player_respawn_time);
+        //TODO Should play a respawn animation...count down?
+        Destroy(this.gameObject);
+        player_movement.PlayerRespawn();
     }
 }

@@ -14,17 +14,29 @@ public class PlayerMovement : MonoBehaviour {
     };
 
 
-    public GameObject player_orientation;
+
+    public GameObject player_prefab;
+    public ParticleSystem particle_system;
+
     private float max_player_speed = 10;
     private float player_speed;
     private bool after_first_input;
+    private bool is_player_dead;
+
+    public Transform player_orientation;
     private Direction direction;
 	
+    void Awake()
+    {
+        particle_system.enableEmission = false;
+    }
     // Use this for initialization
 	void Start () {
         after_first_input = false;
+        is_player_dead = false;
         direction = Direction.NONE;
         player_speed = 0;
+        player_orientation = transform.Find("Player");
 	}
 	
 	// Update is called once per frame
@@ -33,62 +45,67 @@ public class PlayerMovement : MonoBehaviour {
         float input_y = Input.GetAxis("Vertical");
         Vector2 input_direction = new Vector2(input_x, input_y);
 
-        //Get which direction:
-        float input_angle = (Mathf.Atan(input_y / input_x))*(180/Mathf.PI);
+        if (!is_player_dead)
+        {
+            //Get which direction:
+            float input_angle = (Mathf.Atan(input_y / input_x)) * (180 / Mathf.PI);
 
-        if(input_y < 0 && input_x >= 0)
-        {
-            input_angle += 360;
-        }
-        else if(input_x < 0 && input_y >= 0 || input_x < 0 && input_y < 0)
-        {
-            input_angle += 180;
-        }
+            if (input_y < 0 && input_x >= 0)
+            {
+                input_angle += 360;
+            }
+            else if (input_x < 0 && input_y >= 0 || input_x < 0 && input_y < 0)
+            {
+                input_angle += 180;
+            }
 
-        //If you're not moving, take any direction
-        if (!after_first_input && input_direction != Vector2.zero)
-        {
-            after_first_input = true;
-        }
+            //If you're not moving, take any direction
+            if (!after_first_input && input_direction != Vector2.zero)
+            {
+                after_first_input = true;
+                particle_system.enableEmission = true;
+            }
 
-        if ((input_angle >= 315 || input_angle < 45) && direction != Direction.LEFT)
-        {
-            direction = Direction.RIGHT;
-            player_orientation.transform.eulerAngles = new Vector3(0, 0, 270);
-        }
-        else if (input_angle >= 45 && input_angle < 135 && direction != Direction.DOWN)
-        {
-            direction = Direction.UP;
-            player_orientation.transform.eulerAngles = new Vector3(0, 0, 0);
-        }
-        else if (input_angle >= 135 && input_angle < 225 && direction != Direction.RIGHT)
-        {
-            direction = Direction.LEFT;
-            player_orientation.transform.eulerAngles = new Vector3(0, 0, 90);
-        }
-        else if (input_angle >= 225 && input_angle < 315 && direction != Direction.UP)
-        {
-            direction = Direction.DOWN;
-            player_orientation.transform.eulerAngles = new Vector3(0, 0, 180);
-        }
+            if ((input_angle >= 315 || input_angle < 45) && direction != Direction.LEFT)
+            {
+                direction = Direction.RIGHT;
+                player_orientation.transform.eulerAngles = new Vector3(0, 0, 270);
+            }
+            else if (input_angle >= 45 && input_angle < 135 && direction != Direction.DOWN)
+            {
+                direction = Direction.UP;
+                player_orientation.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else if (input_angle >= 135 && input_angle < 225 && direction != Direction.RIGHT)
+            {
+                direction = Direction.LEFT;
+                player_orientation.transform.eulerAngles = new Vector3(0, 0, 90);
+            }
+            else if (input_angle >= 225 && input_angle < 315 && direction != Direction.UP)
+            {
+                direction = Direction.DOWN;
+                player_orientation.transform.eulerAngles = new Vector3(0, 0, 180);
+            }
 
-        switch (direction)
-        {
-            case Direction.UP:
-                transform.Translate(new Vector3(0, 1) * Time.deltaTime * max_player_speed);
-                break;
-            case Direction.RIGHT:
-                transform.Translate(new Vector3(1, 0) * Time.deltaTime * max_player_speed);
-                break;
-            case Direction.DOWN:
-                transform.Translate(new Vector3(0, -1) * Time.deltaTime * max_player_speed);
-                break;
-            case Direction.LEFT:
-                transform.Translate(new Vector3(-1, 0) * Time.deltaTime * max_player_speed);
-                break;
-            case Direction.NONE:
-                break;
-        }
+            switch (direction)
+            {
+                case Direction.UP:
+                    transform.Translate(new Vector3(0, 1) * Time.deltaTime * max_player_speed);
+                    break;
+                case Direction.RIGHT:
+                    transform.Translate(new Vector3(1, 0) * Time.deltaTime * max_player_speed);
+                    break;
+                case Direction.DOWN:
+                    transform.Translate(new Vector3(0, -1) * Time.deltaTime * max_player_speed);
+                    break;
+                case Direction.LEFT:
+                    transform.Translate(new Vector3(-1, 0) * Time.deltaTime * max_player_speed);
+                    break;
+                case Direction.NONE:
+                    transform.Translate(new Vector3(1, 1) * Time.deltaTime * 0);
+                    break;
+            }
+        } 
     }
 
     void PickRandomDirection()
@@ -110,5 +127,20 @@ public class PlayerMovement : MonoBehaviour {
                 direction = Direction.LEFT;
                 break;
         }
+    }
+
+    public void PlayerDeath()
+    {
+        direction = Direction.NONE;
+        particle_system.enableEmission = false;
+        is_player_dead = true;
+    }
+
+    public void PlayerRespawn()
+    {
+        Debug.Log("Player Respawning...");
+        player_orientation = Instantiate(player_prefab, this.transform).transform;
+        particle_system.enableEmission = true;
+        is_player_dead = false;
     }
 }
