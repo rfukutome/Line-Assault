@@ -24,6 +24,8 @@ public class PlayerMovement : MonoBehaviour {
     private bool is_player_dead;
 
     public Transform player_orientation;
+
+
     private Direction direction;
 	
     void Awake()
@@ -139,7 +141,11 @@ public class PlayerMovement : MonoBehaviour {
     public void PlayerRespawn()
     {
         Debug.Log("Player Respawning...");
+
+        //TODO change the spawn point to a random location on the map.
         player_orientation = Instantiate(player_prefab, this.transform).transform;
+
+        //Make the player a different color
         particle_system.enableEmission = true;
         is_player_dead = false;
     }
