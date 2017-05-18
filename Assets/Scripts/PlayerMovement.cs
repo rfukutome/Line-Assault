@@ -16,28 +16,25 @@ public class PlayerMovement : MonoBehaviour {
 
 
     public GameObject player_prefab;
-    public ParticleSystem particle_system;
 
-    private float max_player_speed = 10;
+    //Speed of the character
     private float player_speed;
+    private float normal_player_speed = 10;
+    private float boosted_speed = 20;
+
     private bool after_first_input;
     private bool is_player_dead;
+    private bool is_boosting;
 
     public Transform player_orientation;
 
-
     private Direction direction;
 	
-    void Awake()
-    {
-        particle_system.enableEmission = false;
-    }
     // Use this for initialization
 	void Start () {
         after_first_input = false;
         is_player_dead = false;
         direction = Direction.NONE;
-        player_speed = 0;
         player_orientation = transform.Find("Player");
 	}
 	
@@ -46,6 +43,28 @@ public class PlayerMovement : MonoBehaviour {
         float input_x = Input.GetAxis("Horizontal");
         float input_y = Input.GetAxis("Vertical");
         Vector2 input_direction = new Vector2(input_x, input_y);
+
+
+        /// BOOSTING LOGIC ///
+        //Logic to see if the player is trying to boost or not
+        if (Input.GetButtonDown("Boost"))
+        {
+            is_boosting = true;
+        }
+        else if (Input.GetButtonUp("Boost"))
+        {
+            is_boosting = false;
+        }
+
+        if (is_boosting)
+        {
+            player_speed = boosted_speed;
+        }
+        else
+        {
+            player_speed = normal_player_speed;
+        }
+        ///////////////////////
 
         if (!is_player_dead)
         {
@@ -65,7 +84,6 @@ public class PlayerMovement : MonoBehaviour {
             if (!after_first_input && input_direction != Vector2.zero)
             {
                 after_first_input = true;
-                particle_system.enableEmission = true;
             }
 
             if ((input_angle >= 315 || input_angle < 45) && direction != Direction.LEFT)
@@ -92,16 +110,16 @@ public class PlayerMovement : MonoBehaviour {
             switch (direction)
             {
                 case Direction.UP:
-                    transform.Translate(new Vector3(0, 1) * Time.deltaTime * max_player_speed);
+                    transform.Translate(new Vector3(0, 1) * Time.deltaTime * player_speed);
                     break;
                 case Direction.RIGHT:
-                    transform.Translate(new Vector3(1, 0) * Time.deltaTime * max_player_speed);
+                    transform.Translate(new Vector3(1, 0) * Time.deltaTime * player_speed);
                     break;
                 case Direction.DOWN:
-                    transform.Translate(new Vector3(0, -1) * Time.deltaTime * max_player_speed);
+                    transform.Translate(new Vector3(0, -1) * Time.deltaTime * player_speed);
                     break;
                 case Direction.LEFT:
-                    transform.Translate(new Vector3(-1, 0) * Time.deltaTime * max_player_speed);
+                    transform.Translate(new Vector3(-1, 0) * Time.deltaTime * player_speed);
                     break;
                 case Direction.NONE:
                     transform.Translate(new Vector3(1, 1) * Time.deltaTime * 0);
@@ -134,7 +152,6 @@ public class PlayerMovement : MonoBehaviour {
     public void PlayerDeath()
     {
         direction = Direction.NONE;
-        particle_system.enableEmission = false;
         is_player_dead = true;
     }
 
@@ -144,9 +161,6 @@ public class PlayerMovement : MonoBehaviour {
 
         //TODO change the spawn point to a random location on the map.
         player_orientation = Instantiate(player_prefab, this.transform).transform;
-
-        //Make the player a different color
-        particle_system.enableEmission = true;
         is_player_dead = false;
     }
 }

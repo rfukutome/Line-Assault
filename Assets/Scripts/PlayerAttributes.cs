@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class PlayerAttributes : MonoBehaviour {
 
-    public ParticleEmitter particle_emitter;
+    public ParticleSystem.MainModule particle_system;
     private int player_respawn_time = 3;
     private PlayerMovement player_movement;
     private SpriteRenderer sprite_renderer;
-    string player_color; //future use?
+    private Color player_color; //future use?
 
 	// Use this for initialization
 	void Start () {
         player_movement = gameObject.GetComponentInParent<PlayerMovement>();
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
+        particle_system = transform.parent.GetComponentInChildren<ParticleSystem>().main;
         PickRandomColor();
     }
 
@@ -56,19 +57,19 @@ public class PlayerAttributes : MonoBehaviour {
         switch (number_direction)
         {
             case 0:
-                red_float = 1f;
+                red_float = 255f;
                 red_picked = true;
                 break;
             case 1:
-                blue_float = 1f;
+                blue_float = 255f;
                 blue_picked = true;
                 break;
             case 2:
-                green_float = 1f;
+                green_float = 255f;
                 green_picked = true;
                 break;
             default:
-                Debug.Log("Should not fall into this part PICK RANDOM COLOR");
+                Debug.Log("ERROR: PickRandomColor(), switch case 1");
                 break;
         }
 
@@ -103,14 +104,16 @@ public class PlayerAttributes : MonoBehaviour {
                     }
                     break;
                 default:
-                    Debug.Log("Should not fall into this part PICK RANDOM COLOR");
+                    Debug.Log("ERROR: PickRandomColor(), switch case 2");
                     break;
             }
         }
 
-
-        Color character_color = new Color(red_float/255.0f, green_float / 255.0f, blue_float / 255.0f, 1.0f);
-        sprite_renderer.color = character_color;
+        Debug.Log("R: " + red_float + ", G: " + green_float + ", B: " + blue_float);
+        player_color = new Color(red_float/255.0f, green_float / 255.0f, blue_float / 255.0f, 1.0f);
+        sprite_renderer.color = player_color;
+        particle_system.startColor = player_color;
+        
     }
 
     IEnumerator DeathAnimation()
