@@ -8,6 +8,7 @@ public class PlayerAttributes : MonoBehaviour {
     private int player_respawn_time = 3;
     private PlayerMovement player_movement;
     private SpriteRenderer sprite_renderer;
+    private PlayerNvm player_nvm;
     private Color player_color; //future use?
 
 	// Use this for initialization
@@ -15,6 +16,7 @@ public class PlayerAttributes : MonoBehaviour {
         player_movement = gameObject.GetComponentInParent<PlayerMovement>();
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         particle_system = transform.parent.GetComponentInChildren<ParticleSystem>().main;
+        player_nvm = gameObject.GetComponentInParent<PlayerNvm>();
         PickRandomColor();
     }
 

@@ -13,8 +13,6 @@ public class PlayerMovement : MonoBehaviour {
         NONE = 4
     };
 
-
-
     public GameObject player_prefab;
 
     //Speed of the character
