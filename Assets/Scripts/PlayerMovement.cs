@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour {
 
     public Transform player_orientation;
 
+    private CameraFollow camera_follow;
     private Direction direction;
 	
     // Use this for initialization
@@ -34,6 +35,8 @@ public class PlayerMovement : MonoBehaviour {
         is_player_dead = false;
         direction = Direction.NONE;
         player_orientation = transform.Find("Player");
+        camera_follow = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraFollow>();
+        camera_follow.FindPlayerTransform();
 	}
 	
 	// Update is called once per frame
